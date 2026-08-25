@@ -1,195 +1,58 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>MOKU AI — Web Emulator V0.2</title>
-<link rel="stylesheet" href="styles.css">
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<title>MOKU AI Emulator V1.0</title>
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 <header class="topbar">
-  <div>
-    <div class="brand">MOKU AI</div>
-    <div class="subtitle">AI-programmable Eurorack · Web Emulator V0.2</div>
-  </div>
-  <nav class="mode-tabs">
-    <button class="mode active" data-mode="play">PLAY</button>
-    <button class="mode" data-mode="create">CREATE</button>
-  </nav>
+  <div><div class="brand">MOKU <span>AI</span></div><div class="subtitle">AI-programmable Eurorack · Web Emulator V1.0</div></div>
+  <div class="status">● Connected</div>
 </header>
-
+<nav class="nav"><button class="active">▶ PLAY</button><button>✎ CREATE</button><button>App Store</button><button>SDK</button></nav>
 <main>
-<section id="playMode" class="mode-panel active">
-  <div class="hero-copy">
-    <div>
-      <h1>One module. Endless instruments.</h1>
-      <p>Patch it, play it, or create a new module with AI.</p>
+<section class="module-shell">
+  <div class="screw s1"></div><div class="screw s2"></div><div class="screw s3"></div><div class="screw s4"></div>
+  <div class="module-brand">MOKU <span>AI</span></div>
+  <div class="top-grid">
+    <div class="side-controls left">
+      <div class="big-knob ring-purple"><div class="mark"></div></div><div class="num">1</div>
+      <div class="small-knob"><div class="mark"></div></div>
     </div>
-    <button id="openCreate" class="primary">Create with AI</button>
+    <div class="screen-panel">
+      <div class="screen-head"><b>2×8 CV / GATE SEQUENCER</b><span>☰</span></div>
+      <div class="screen-meta"><span>STEP <b id="stepRead">1 / 8</b></span><span>BPM <b id="screenBpm">120.0</b></span></div>
+      <div id="seqGrid" class="seq-grid"></div>
+      <div class="screen-footer"><span>K1 RATE</span><span>K2 RANGE</span><span>K3 AMT</span><span>K4 SWING</span></div>
+    </div>
+    <div class="side-controls right">
+      <div class="big-knob ring-green"><div class="mark"></div></div><div class="num">2</div>
+      <div class="small-knob"><div class="mark"></div></div>
+    </div>
   </div>
-
-  <div class="rack-wrap">
-    <svg id="cableLayer" class="cable-layer"></svg>
-
-    <section class="source-module eurorack-module">
-      <div class="rail top"></div>
-      <div class="module-head">
-        <span>PATCH LAB</span><small>virtual sources</small>
-      </div>
-
-      <div class="source-block">
-        <label>CV SOURCE 1 <span id="cv1Read">0.00V</span></label>
-        <input id="cv1src" type="range" min="-100" max="100" value="0">
-        <button class="jack source" data-port="src-cv1" data-kind="source" data-signal="cv1">CV1</button>
-      </div>
-
-      <div class="source-block">
-        <label>CV SOURCE 2 <span id="cv2Read">0.00V</span></label>
-        <input id="cv2src" type="range" min="-100" max="100" value="0">
-        <button class="jack source" data-port="src-cv2" data-kind="source" data-signal="cv2">CV2</button>
-      </div>
-
-      <div class="source-block">
-        <label>CLOCK <span id="bpmRead">120 BPM</span></label>
-        <input id="bpm" type="range" min="30" max="240" value="120">
-        <button class="jack source pulse" data-port="src-clock" data-kind="source" data-signal="clock">CLK</button>
-      </div>
-
-      <div class="source-block two">
-        <button id="manualGate" class="gate-pad">MANUAL GATE</button>
-        <button class="jack source pulse" data-port="src-gate" data-kind="source" data-signal="gate">GATE</button>
-      </div>
-
-      <button id="clearPatch" class="ghost full">Clear cables</button>
-      <div class="rail bottom"></div>
-    </section>
-
-    <section class="moku-module eurorack-module">
-      <div class="rail top"></div>
-      <div class="module-head moku">
-        <span>MOKU AI</span><small>12HP · programmable</small>
-      </div>
-
-      <div class="display-card">
-        <div class="display-top">
-          <span id="appName">GENERATIVE SEQUENCER</span>
-          <span id="cpuText">CPU 18%</span>
-        </div>
-        <canvas id="displayCanvas" width="420" height="210"></canvas>
-        <div id="appDesc" class="display-desc">4-step probability sequencer with CV modulation.</div>
-      </div>
-
-      <div class="knobs">
-        <div class="knob-unit">
-          <div class="knob" data-k="0"><div class="pointer"></div></div>
-          <div class="knob-label"><span id="k1Label">PROB</span><b id="k1Value">50</b></div>
-        </div>
-        <div class="knob-unit">
-          <div class="knob" data-k="1"><div class="pointer"></div></div>
-          <div class="knob-label"><span id="k2Label">TRANS</span><b id="k2Value">50</b></div>
-        </div>
-        <div class="knob-unit">
-          <div class="knob" data-k="2"><div class="pointer"></div></div>
-          <div class="knob-label"><span id="k3Label">CHAOS</span><b id="k3Value">50</b></div>
-        </div>
-        <div class="knob-unit">
-          <div class="knob" data-k="3"><div class="pointer"></div></div>
-          <div class="knob-label"><span id="k4Label">SLEW</span><b id="k4Value">50</b></div>
-        </div>
-      </div>
-
-      <div class="softkeys">
-        <button id="homeBtn">HOME</button><button id="randomBtn">RANDOM</button>
-        <button id="audioBtn" class="primary">AUDIO ON</button><button id="panicBtn">PANIC</button>
-      </div>
-
-      <div class="io-section">
-        <div class="io-row">
-          <div>
-            <div class="io-title">CV IN</div>
-            <div class="jack-row">
-              <button class="jack input" data-port="cv-in-1" data-kind="input" data-input="cv1">1</button>
-              <button class="jack input" data-port="cv-in-2" data-kind="input" data-input="cv2">2</button>
-              <button class="jack input" data-port="cv-in-3" data-kind="input" data-input="cv3">3</button>
-              <button class="jack input" data-port="cv-in-4" data-kind="input" data-input="cv4">4</button>
-            </div>
-          </div>
-          <div>
-            <div class="io-title">AUDIO</div>
-            <div class="jack-row">
-              <button class="jack input" data-port="audio-in-l" data-kind="input">IN L</button>
-              <button class="jack input" data-port="audio-in-r" data-kind="input">IN R</button>
-              <button class="jack output" data-port="audio-out-l" data-kind="output">OUT L</button>
-              <button class="jack output" data-port="audio-out-r" data-kind="output">OUT R</button>
-            </div>
-          </div>
-        </div>
-        <div class="io-row">
-          <div>
-            <div class="io-title">CV OUT</div>
-            <div class="jack-row">
-              <button class="jack output led" data-port="cv-out-1" data-kind="output">1</button>
-              <button class="jack output led" data-port="cv-out-2" data-kind="output">2</button>
-            </div>
-          </div>
-          <div>
-            <div class="io-title">GATE</div>
-            <div class="jack-row">
-              <button class="jack input" data-port="gate-in-1" data-kind="input" data-input="gate1">IN1</button>
-              <button class="jack input" data-port="gate-in-2" data-kind="input" data-input="gate2">IN2</button>
-              <button class="jack output led" id="gateOut1" data-port="gate-out-1" data-kind="output">OUT1</button>
-              <button class="jack output led" id="gateOut2" data-port="gate-out-2" data-kind="output">OUT2</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="status-strip">
-        <span>USB-C DEVICE</span><span>USB-A HOST</span><span class="wifi">Wi-Fi ●</span>
-      </div>
-      <div class="rail bottom"></div>
-    </section>
+  <div class="action-row"><button>⌂</button><button>☰</button><button>☆</button><button>↩</button><button id="runBtn">▶</button></div>
+  <div class="io-grid">
+    <div class="io-group"><div class="io-title">CV IN</div><div class="jacks four"><div><button class="jack"></button><label>CV1</label><span id="inCv1">0.00V</span></div><div><button class="jack"></button><label>CV2</label><span id="inCv2">0.00V</span></div><div><button class="jack"></button><label>CV3</label><span>0.00V</span></div><div><button class="jack"></button><label>CV4</label><span>0.00V</span></div></div></div>
+    <div class="io-group"><div class="io-title">AUDIO</div><div class="jacks two"><div><button class="jack"></button><label>IN L</label><span>-∞ dB</span></div><div><button class="jack"></button><label>IN R</label><span>-∞ dB</span></div></div></div>
+    <div class="io-group"><div class="io-title">CV OUT</div><div class="jacks two"><div><button class="jack out blue"></button><label>CV1</label><span id="outCv1">0.00V</span></div><div><button class="jack out blue"></button><label>CV2</label><span id="outCv2">0.00V</span></div></div></div>
+    <div class="io-group"><div class="io-title">GATE IN / OUT</div><div class="jacks four"><div><button class="jack"></button><label>IN1</label><span id="gateInRead">LOW</span></div><div><button class="jack"></button><label>IN2</label><span>LOW</span></div><div><button id="gateJack1" class="jack out orange"></button><label>OUT1</label><span id="gateOut1">LOW</span></div><div><button id="gateJack2" class="jack out orange"></button><label>OUT2</label><span id="gateOut2">LOW</span></div></div></div>
   </div>
-
-  <div class="meters-card">
-    <div><small>CV OUT 1</small><b id="cvOut1">0.00V</b></div>
-    <div><small>CV OUT 2</small><b id="cvOut2">0.00V</b></div>
-    <div><small>GATE OUT 1</small><b id="gateOut1Text">LOW</b></div>
-    <div><small>GATE OUT 2</small><b id="gateOut2Text">LOW</b></div>
-  </div>
+  <div class="ports"><div><b>USB-C</b><small>Power / Data</small></div><div><b>USB-A HOST</b><small>MIDI / Storage</small></div><div><b>microSD</b><small>Apps / Samples</small></div></div>
+  <div class="module-brand bottom">MOKU <span>AI</span></div>
 </section>
 
-<section id="createMode" class="mode-panel">
-  <div class="create-shell">
-    <div class="creator">
-      <div class="eyebrow">MOKU AI STUDIO</div>
-      <h1>Describe the module you want.</h1>
-      <textarea id="prompt">Make a Buchla-style random voltage generator with two correlated CV outputs. K1 controls rate, K2 chaos, K3 correlation, K4 slew. CV1 modulates rate and Gate In 1 clocks it.</textarea>
-      <div class="prompt-chips">
-        <button data-prompt="Create a 4-step generative sequencer. K1 probability, K2 transpose, CV1 modulation, Gate Out 1 rhythm.">Generative sequencer</button>
-        <button data-prompt="Make a dual LFO. K1 and K2 set rate, K3 controls phase relationship, CV1 modulates LFO 1.">Dual LFO</button>
-        <button data-prompt="Create a musical CV quantizer. CV1 is pitch input, K1 selects scale, K2 transposes, Gate In 1 triggers sample and hold.">Quantizer</button>
-      </div>
-      <button id="generateBtn" class="primary big">Generate module</button>
-    </div>
-
-    <div class="generation">
-      <div class="gen-steps">
-        <div class="step active"><span>1</span>Understand</div>
-        <div class="step"><span>2</span>Design I/O</div>
-        <div class="step"><span>3</span>Build app</div>
-        <div class="step"><span>4</span>Validate</div>
-      </div>
-      <div id="proposal" class="proposal empty">
-        <div class="proposal-placeholder">Your generated MOKU app will appear here.</div>
-      </div>
-      <button id="installBtn" class="primary big" disabled>Install to virtual MOKU</button>
-    </div>
+<section class="lab">
+  <div class="lab-head"><div><h2>SIGNAL LAB</h2><p>Virtual Eurorack sources and live I/O monitor.</p></div><button id="resetBtn">Reset</button></div>
+  <div class="lab-grid">
+    <div class="lab-card"><h3>CV SOURCES</h3><label>CV1 <b id="cv1Val">0.00V</b></label><input id="cv1" type="range" min="-500" max="500" value="0"><label>CV2 <b id="cv2Val">0.00V</b></label><input id="cv2" type="range" min="-500" max="500" value="0"></div>
+    <div class="lab-card"><h3>CLOCK</h3><label>BPM <b id="bpmVal">120</b></label><input id="bpm" type="range" min="30" max="240" value="120"><div class="transport"><button id="halfBtn">÷2</button><button id="doubleBtn">×2</button><button id="tapBtn">TAP</button></div><div class="run-state"><span id="runLed">●</span> <b id="runText">RUN</b></div></div>
+    <div class="lab-card"><h3>GATE SOURCES</h3><button id="gate1Btn" class="gate-btn">Gate 1</button><button id="gate2Btn" class="gate-btn">Gate 2</button><div class="monitor"><div>CV OUT 1 <b id="monCv1">0.00V</b></div><div>CV OUT 2 <b id="monCv2">0.00V</b></div><div>GATE OUT 1 <b id="monGate1">LOW</b></div><div>GATE OUT 2 <b id="monGate2">LOW</b></div></div></div>
   </div>
 </section>
 </main>
-
-<footer>MOKU AI Web Emulator V0.2 · UX / SDK / product validation prototype</footer>
+<footer>MOKU AI Web Emulator V1.0 · 2×8 CV/Gate Sequencer Demo</footer>
 <script src="app.js"></script>
 </body>
 </html>
