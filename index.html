@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MOKU AI — Web Emulator Prototype</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div><div class="brand">MOKU AI</div><div class="subtitle">AI-programmable Eurorack · Web Emulator V0.1</div></div>
+    <div class="top-actions"><button id="panicBtn" class="ghost">Panic / Reset Gates</button><button id="saveBtn" class="primary">Save Patch</button></div>
+  </header>
+  <main class="layout">
+    <section class="rack-area card">
+      <div class="section-head"><div><h2>Virtual Module</h2><p>Patch inputs, turn controls and load apps.</p></div><select id="appSelect"></select></div>
+      <div class="rack">
+        <div class="module">
+          <div class="module-title">MOKU AI</div>
+          <div class="screen" id="screen"><div class="screen-title" id="screenTitle">BOOT</div><canvas id="screenCanvas" width="360" height="170"></canvas><div class="screen-status" id="screenStatus">Ready</div></div>
+          <div class="knob-grid">
+            <div class="control"><label>K1 <span id="k1v">50</span></label><input id="k1" type="range" min="0" max="100" value="50"></div>
+            <div class="control"><label>K2 <span id="k2v">50</span></label><input id="k2" type="range" min="0" max="100" value="50"></div>
+            <div class="control"><label>K3 <span id="k3v">50</span></label><input id="k3" type="range" min="0" max="100" value="50"></div>
+            <div class="control"><label>K4 <span id="k4v">50</span></label><input id="k4" type="range" min="0" max="100" value="50"></div>
+          </div>
+          <div class="button-row"><button data-btn="home">HOME</button><button data-btn="shift">SHIFT</button><button data-btn="action">ACTION</button><button data-btn="random">RANDOM</button></div>
+          <div class="io-grid">
+            <div class="io-group"><h4>CV IN</h4><div class="jacks"><button class="jack in" data-jack="cv1">CV1</button><button class="jack in" data-jack="cv2">CV2</button><button class="jack in" data-jack="cv3">CV3</button><button class="jack in" data-jack="cv4">CV4</button></div></div>
+            <div class="io-group"><h4>AUDIO</h4><div class="jacks"><button class="jack in" data-jack="ainL">IN L</button><button class="jack in" data-jack="ainR">IN R</button><button class="jack out" data-jack="aoutL">OUT L</button><button class="jack out" data-jack="aoutR">OUT R</button></div></div>
+            <div class="io-group"><h4>CV OUT</h4><div class="jacks"><button class="jack out" data-jack="cvo1">CV1</button><button class="jack out" data-jack="cvo2">CV2</button></div></div>
+            <div class="io-group"><h4>GATE</h4><div class="jacks"><button class="jack in" data-jack="gin1">IN1</button><button class="jack in" data-jack="gin2">IN2</button><button class="jack out" data-jack="gout1">OUT1</button><button class="jack out" data-jack="gout2">OUT2</button></div></div>
+          </div>
+          <div class="ports"><span>USB-C DEVICE</span><span>USB-A HOST</span><span>Wi-Fi ●</span></div>
+        </div>
+        <aside class="signal-lab">
+          <h3>Signal Lab</h3><p>Simulate external Eurorack sources.</p>
+          <div class="lab-row"><label>CV1 <span id="cv1v">0.00V</span></label><input id="cv1src" type="range" min="-100" max="100" value="0"></div>
+          <div class="lab-row"><label>CV2 <span id="cv2v">0.00V</span></label><input id="cv2src" type="range" min="-100" max="100" value="0"></div>
+          <div class="lab-row"><label>Clock BPM <span id="bpmv">120</span></label><input id="bpm" type="range" min="30" max="240" value="120"></div>
+          <div class="lab-row inline"><button id="gate1">Gate 1</button><button id="gate2">Gate 2</button></div>
+          <div class="meter"><div><span>CV OUT 1</span><strong id="cvo1v">0.00V</strong></div><div><span>CV OUT 2</span><strong id="cvo2v">0.00V</strong></div><div><span>Gate 1</span><strong id="gout1v">LOW</strong></div><div><span>Gate 2</span><strong id="gout2v">LOW</strong></div></div>
+          <div class="audio-block"><button id="audioStart" class="primary">Enable Audio</button><button id="audioStop" class="ghost">Stop</button><p id="audioState">Audio engine off.</p></div>
+        </aside>
+      </div>
+    </section>
+    <section class="studio card">
+      <div class="tabs"><button class="tab active" data-tab="ai">AI Studio</button><button class="tab" data-tab="store">App Store</button><button class="tab" data-tab="sdk">SDK</button></div>
+      <div class="tab-panel active" id="tab-ai"><h2>Describe a module</h2><textarea id="aiPrompt">Create a 4-step generative sequencer. K1 controls probability, K2 controls transpose, CV1 adds modulation, Gate Out 1 emits the rhythm.</textarea><div class="row"><button id="generateBtn" class="primary">Generate App</button><button id="loadGeneratedBtn" class="ghost" disabled>Load to MOKU</button></div><div class="result" id="aiResult">AI mock is ready. It maps natural-language intent to a safe MOKU app definition.</div></div>
+      <div class="tab-panel" id="tab-store"><h2>MOKU App Store</h2><div id="storeGrid" class="store-grid"></div></div>
+      <div class="tab-panel" id="tab-sdk"><h2>MOKU SDK Concept</h2><pre><code>const pitch = moku.cv.in(1);
+const cutoff = moku.knob(1);
+
+const osc = new Oscillator("saw");
+osc.pitch(pitch);
+
+const filter = new Filter("lowpass");
+filter.cutoff(cutoff);
+
+moku.audio.out(1).send(filter.process(osc));</code></pre><p>The web emulator uses the same conceptual hardware-abstraction layer planned for STM32 firmware later.</p></div>
+    </section>
+  </main>
+  <footer>MOKU AI Web Emulator V0.1 · product/UX validation prototype</footer>
+  <script src="app.js"></script>
+</body>
+</html>
